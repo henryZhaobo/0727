@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+<script src="Tools2.js"></script>
+<style>
+    .search{
+        border: 1px solid green;
+        text-align: center;
+        padding-top: 150px;
+        padding-bottom: 150px;
+    }
+    .keyword{
+        width: 80%;
+        height: 35px;
+        border: 1px solid #ddd;
+        font-size: 30px;
+
+    }
+    /*搜索结果列表*/
+    .searchList{
+        border: 1px solid #CCCCCC;
+        height: 350px;
+        width: 80%;
+    margin-left: 125px;
+        display: none;
+        text-align: left;
+    }
+    .searchList ul {
+        list-style: none;
+    }
+    .searchList ul li{
+        cursor: pointer;
+    }
+    .searchList ul li:hover{
+        background-color: #00a0d2;
+    }
+    .searchResult{
+        /*border: 1px solid #CCCCCC;*/
+        width: 80%;
+    }
+    table{
+      margin: 10px 0 0 90px;
+    }
+</style>
+</head>
+<body>
+<div class="search">
+    <input type="text" class="keyword">
+    <button class="searchBtn">搜索</button>
+    <div class="searchList"></div>
+    <div class="searchResult"></div>
+</div>
+<script>
+    var searchList=document.querySelector(".searchList");
+    var searchResult=document.querySelector(".searchResult");
+    var searchBtn=document.querySelector(".searchBtn");
+    var  xhr=new XMLHttpRequest();
+    var fd=new FormData();
+    var  keyword=document.querySelector(".keyword");
+    searchBtn.addEventListener("click",function(){
+        xhr.open("post","search1.php");
+        fd.append("action","getResult");
+        fd.append("keyword",trim(keyword.value));
+        xhr.send(fd);
+        xhr.addEventListener("readystatechange",function(){
+            if (xhr.readyState==4){
+                if (xhr.status==200){
+                    console.log(xhr.responseText);
+                    let oneUser=JSON.parse(xhr.responseText);
+                    let resultStr="<table border='1' width='100%'>";
+                    resultStr+="<tr>";
+                    resultStr+="<td>"+oneUser[0].username+"</td>";
+                    resultStr+="<td>"+oneUser[0].email+"</td>";
+                    resultStr+="<td>"+oneUser[0].regTime+"</td>";
+                    resultStr+="</tr>";
+                    resultStr+="</table>";
+                    searchResult.innerHTML=resultStr;
+                    searchList.style.display="none";
+                }
+            }
+        })
+
+    });
+    function pick(element){
+        keyword.value=element.innerHTML;
+        searchList.style.display="none";
+        searchBtn.click();
+    }
+    keyword.addEventListener("keyup",function(){
+//        console.log(trim(this.value).length);
+        //用户有输入内容的话才触发ajax
+        //输出空格不会触发
+        if (trim(this.value).length!=0){
+            xhr.open("post","search1.php");
+            fd.append("action","search");
+            fd.append("keyword",trim(this.value));
+            xhr.send(fd);
+            xhr.addEventListener("readystatechange",function(){
+                if (xhr.readyState==4){
+                    if (xhr.status==200){
+                        if (xhr.responseText=="failed"){
+                            searchList.style.display="none"
+                        }else {
+                            searchList.style.display = "block";
+                            let obj = JSON.parse(xhr.responseText);
+                            let str = "<ul>";
+                            for (var i = 0; i < obj.length; i++) {
+                                str += "<li onclick='pick(this)'>" + obj[i].username + "</li>"
+                            }
+                            str += "</ul>";
+                            searchList.innerHTML = str;
+                        }
+                    }
+                }
+            })
+        }else {
+            searchList.style.display="none"
+        }
+
+    })
+</script>
+
+</body>
+</html>

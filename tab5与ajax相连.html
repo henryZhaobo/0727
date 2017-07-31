@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        ul{
+            list-style: none;
+        }
+        .tab{
+            border: 1px solid red;
+            margin: 150px;
+            padding: 15px;
+        }
+        .tab ul{
+            /*border: 1px solid blue;*/
+        }
+        /*清除子元素的浮动对父元素的影响*/
+        .tab ul:after{
+            content: "";
+            display: block;
+            clear: both;
+        }
+        .tab ul li{
+            float: left;
+            width: 150px;
+            height: 30px;
+            margin-right: 10px;
+            background-color: #ffffff;
+            border: 1px solid red;
+            text-align: center;
+            line-height: 30px;
+        }
+        .tab ul li.active{
+            position: relative;
+            top: 5px;
+            z-index: 5;
+            background-color: #ffffff;
+            border:1px solid #00a0d2; ;
+            border-bottom: 0;
+        }
+        .tab div{
+            width: 475px;
+            border: 1px solid slateblue;
+            height: 150px;
+        }
+        .tab div.spotlight{
+            display: block;
+            position: relative;
+            z-index: 4;
+            top: 3px;
+            background-color: #ffffff;
+            border: 1px solid #00a0d2;
+        }
+        .tab ul li.active span{
+            display: block;
+            margin: auto;
+            height: 5px;
+            background-color: red;
+            width: 10%;
+            animation: widthin 2s ease-in-out forwards;
+            /*forwards:停留在最后一帧， backwards"停留在第一帧*/
+        }
+
+        /*声明一个动画*/
+        @keyframes widthin {
+            0%{
+                width: 0%;
+            }
+            100%{
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="tab">
+    <ul>
+        <li class="foo active"><span></span>会员</li>
+        <li><span></span>管理员</li>
+        <li><span></span>新闻</li>
+    </ul>
+    <div class="spotlight">1</div>
+</div>
+<script>
+
+    var lis=document.querySelectorAll(".tab li");
+    var lisd=document.querySelectorAll(".tab div");
+    Ajax(lisd[0],"tab.php",0);
+   /* //匿名函数的自触发  i传值给index
+    lis.forEach(function(value,index){
+        value.addEventListener("click",function(){
+            for (var j=0;j<lis.length;j++){
+                lis[j].className="";
+                lisd[j].className="";
+            }
+            value.className="active";
+            lisd[index].className="spotlight";
+        })
+    });*/
+//    声明为局部变量
+    for(let i=0;i<lis.length;i++){
+            lis[i].addEventListener("click",function(){
+             /*   /!*单击事件的步骤
+                 * 1.清除所有的list的样式
+            * 2.为当前的list添加样式*!/*/
+            for (var j=0;j<lis.length;j++){
+                lis[j].className=lis[j].className.replace("active","");
+            }
+            this.className+="active";
+                switch (i){
+                    case 0:Ajax(lisd[0],"tab.php",i); break;
+                    case 1:Ajax(lisd[0],"tab.php",i);break;
+                    case 2:Ajax(lisd[0],"tab.php",i);break;
+                }
+        })
+
+
+    }
+    function Ajax(feedback,url,num){
+        var xhr=new XMLHttpRequest();
+        var fd=new FormData();
+        xhr.open("post",url);
+        fd.append("index",num);
+        xhr.send(fd);
+        xhr.addEventListener("readystatechange",function(){
+            if (xhr.readyState==4){
+                if (xhr.status==200){
+                    //把接收到的字符串转换为数组
+                    var str=eval(xhr.responseText);
+//                    console.log(str);
+                    var data="<ol>";
+                   str.forEach(function(value){
+                       let result=value.username||value.title;
+                       data+="<li>"+result+"</li>"
+                   });
+                    data+="</ol>";
+                    console.log(data);
+                    feedback.innerHTML=data;
+                }
+            }
+        })
+    }
+
+
+</script>
+
+</body>
+</html>

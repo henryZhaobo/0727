@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        ul{
+            list-style: none;
+        }
+        .tab{
+            border: 1px solid red;
+            margin: 150px;
+            padding: 15px;
+        }
+        .tab ul{
+            /*border: 1px solid blue;*/
+        }
+        /*清除子元素的浮动对父元素的影响*/
+        .tab ul:after{
+            content: "";
+            display: block;
+            clear: both;
+        }
+        .tab ul li{
+            float: left;
+            width: 150px;
+            height: 30px;
+            margin-right: 10px;
+            background-color: #ffffff;
+            border: 1px solid red;
+        }
+        .tab ul li.active{
+            position: relative;
+            top: 5px;
+            z-index: 5;
+            background-color: #ffffff;
+            border:1px solid #00a0d2; ;
+            border-bottom: 0;
+        }
+        .tab div{
+            width: 475px;
+            border: 1px solid slateblue;
+            height: 150px;
+            display: none;
+        }
+        .tab div.spotlight{
+            display: block;
+            position: relative;
+            z-index: 4;
+            top: 3px;
+            background-color: #ffffff;
+            border: 1px solid #00a0d2;
+        }
+    </style>
+</head>
+<body>
+<div class="tab">
+    <ul>
+        <li class="active"></li>
+        <li></li>
+        <li></li>
+    </ul>
+    <div class="spotlight">1</div>
+    <div>2</div>
+    <div>3</div>
+</div>
+<li>one</li>
+<script>
+    var lis=document.querySelectorAll(".tab li");
+    var lisd=document.querySelectorAll(".tab div");
+    //匿名函数的自触发  i传值给index
+    for(var i=0;i<lis.length;i++){
+        //为每一个元素值添加属性
+        lis[i].setAttribute("index",i);
+            lis[i].addEventListener("click",function(){
+                /*单击事件的步骤
+                 * 1.清除所有的list的样式
+                 * 2.为当前的list添加样式*/
+                for (var j=0;j<lis.length;j++){
+                    lis[j].className="";
+                    lisd[j].className=""
+                }
+                this.className="active";
+//                console.log(index);
+                lisd[this.getAttribute("index")].className="spotlight";
+            })
+        }
+
+
+
+
+
+</script>
+
+</body>
+</html>
